@@ -36,8 +36,8 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                // Use the kubeconfig file to talk to the cluster
-                configFileProvider([configFile(fileId: K8S_CREDENTIALS, variable: 'KUBECONFIG')]) {
+                // This uses the "Secret File" you added in Manage Jenkins -> Credentials
+                withCredentials([file(credentialsId: 'k8s-config', variable: 'KUBECONFIG')]) {
                     sh "sed -i 's|\${DOCKER_IMAGE}|${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}|g' deployment.yaml"
                     sh "kubectl apply -f deployment.yaml --kubeconfig=${KUBECONFIG}"
                 }
